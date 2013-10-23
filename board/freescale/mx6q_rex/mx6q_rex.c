@@ -795,26 +795,19 @@ static int setup_pmic_voltages(void)
 s32 spi_get_cfg(struct imx_spi_dev_t *dev)
 {
 	switch (dev->slave.cs) {
-	case 0:
+	case 2:
 		/* SPI-NOR */
-		dev->base = ECSPI1_BASE_ADDR;
+		// iMX6 Rex Boot SPI is mapped to ECSPI3 CS2
+		dev->base = ECSPI3_BASE_ADDR;
 		dev->freq = 25000000;
 		dev->ss_pol = IMX_SPI_ACTIVE_LOW;
-		dev->ss = 0;
+		dev->ss = 2;
 		dev->fifo_sz = 64 * 4;
 		dev->us_delay = 0;
 		break;
-	case 1:
-		/* SPI-NOR */
-		dev->base = ECSPI1_BASE_ADDR;
-		dev->freq = 25000000;
-		dev->ss_pol = IMX_SPI_ACTIVE_LOW;
-		dev->ss = 1;
-		dev->fifo_sz = 64 * 4;
-		dev->us_delay = 0;
-		break;
+
 	default:
-		printf("Invalid Bus ID!\n");
+		printf("Invalid Bus ID! (For iMX6 Rex use: sf probe 3:2)\n");
 	}
 
 	return 0;
@@ -826,38 +819,29 @@ void spi_io_init(struct imx_spi_dev_t *dev)
 
 	switch (dev->base) {
 	case ECSPI1_BASE_ADDR:
-		/* Enable clock */
-		reg = readl(CCM_BASE_ADDR + CLKCTL_CCGR1);
-		reg |= 0x3;
-		writel(reg, CCM_BASE_ADDR + CLKCTL_CCGR1);
-
-#if defined CONFIG_MX6Q
-		/* SCLK */
-		mxc_iomux_v3_setup_pad(MX6Q_PAD_KEY_COL0__ECSPI1_SCLK);
-
-		/* MISO */
-		mxc_iomux_v3_setup_pad(MX6Q_PAD_KEY_COL1__ECSPI1_MISO);
-
-		/* MOSI */
-		mxc_iomux_v3_setup_pad(MX6Q_PAD_KEY_ROW0__ECSPI1_MOSI);
-
-		mxc_iomux_v3_setup_pad(MX6Q_PAD_KEY_ROW1__ECSPI1_SS0);
-#elif defined CONFIG_MX6DL
-		/* SCLK */
-		mxc_iomux_v3_setup_pad(MX6DL_PAD_KEY_COL0__ECSPI1_SCLK);
-
-		/* MISO */
-		mxc_iomux_v3_setup_pad(MX6DL_PAD_KEY_COL1__ECSPI1_MISO);
-
-		/* MOSI */
-		mxc_iomux_v3_setup_pad(MX6DL_PAD_KEY_ROW0__ECSPI1_MOSI);
-
-		mxc_iomux_v3_setup_pad(MX6DL_PAD_KEY_ROW1__ECSPI1_SS0);
-#endif
 		break;
 	case ECSPI2_BASE_ADDR:
+		break;
 	case ECSPI3_BASE_ADDR:
-		/* ecspi2-3 fall through */
+		// iMX6 Rex Boot SPI is mapped to ECSPI3 CS2
+		/* Enable ECSPI3 clocks */
+		reg = readl(CCM_BASE_ADDR + CLKCTL_CCGR1);
+		reg |= 0x30;
+		writel(reg, CCM_BASE_ADDR + CLKCTL_CCGR1);
+
+#if defined CONFIG_MX6Q		
+		/* SCLK */
+		mxc_iomux_v3_setup_pad(MX6Q_PAD_DISP0_DAT0__ECSPI3_SCLK);
+
+		/* MISO */
+		mxc_iomux_v3_setup_pad(MX6Q_PAD_DISP0_DAT2__ECSPI3_MISO);
+
+		/* MOSI */
+		mxc_iomux_v3_setup_pad(MX6Q_PAD_DISP0_DAT1__ECSPI3_MOSI);
+
+		/* SS0 */
+		mxc_iomux_v3_setup_pad(MX6Q_PAD_DISP0_DAT5__ECSPI3_SS2);
+#endif
 		break;
 	default:
 		break;
@@ -1717,7 +1701,7 @@ int board_init(void)
 	fsl_set_system_rev();
 
 	/* board id for linux */
-	gd->bd->bi_arch_number = MACH_TYPE_MX6Q_SABRESD;
+	gd->bd->bi_arch_number = MACH_TYPE_MX6Q_SABRESD; //!rf! this should be changed later to MACH_TYPE_MX6Q_REX
 
 	/* address of boot parameters */
 	gd->bd->bi_boot_params = PHYS_SDRAM_1 + 0x100;
@@ -1927,10 +1911,12 @@ void enet_board_init(void)
 
 int checkboard(void)
 {
-	printf("Board: %s-SABRESD: %s Board: 0x%x [",
+	//!rf! still needs to be updated for REX. Add support to read board variant resistors (BOARD_VARIANT_0 & 1 signals)
+	printf("Board: %s-REX: unknown-variant Board: 0x%x [",
 	mx6_chip_name(),
-	mx6_board_rev_name(),
+//	mx6_board_rev_name(),
 	fsl_system_rev);
+
 
 	switch (__REG(SRC_BASE_ADDR + 0x8)) {
 	case 0x0001:
