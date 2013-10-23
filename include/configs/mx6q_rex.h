@@ -140,7 +140,7 @@
  * Miscellaneous configurable options
  */
 #define CONFIG_SYS_LONGHELP		/* undef to save memory */
-#define CONFIG_SYS_PROMPT		"MX6Q SABRESD U-Boot > "
+#define CONFIG_SYS_PROMPT		"Rex U-Boot > "
 #define CONFIG_AUTO_COMPLETE
 #define CONFIG_SYS_CBSIZE		1024	/* Console I/O Buffer Size */
 /* Print Buffer Size */
@@ -201,8 +201,9 @@
  */
 #ifdef CONFIG_CMD_SF
 	#define CONFIG_FSL_SF		1
-	#define CONFIG_SPI_FLASH_IMX_M25PXX	1
-	#define CONFIG_SPI_FLASH_CS	0
+//	#define CONFIG_SPI_FLASH_IMX_M25PXX	1
+	#define CONFIG_SPI_FLASH_IMX_SST	1 //iMX6 Rex has this FLASH
+	#define CONFIG_SPI_FLASH_CS	2	  //iMX6 Rex FLASH is on CS2
 	#define CONFIG_IMX_ECSPI
 	#define IMX_CSPI_VER_2_3	1
 	#define MAX_SPI_BYTES		(64 * 4)
