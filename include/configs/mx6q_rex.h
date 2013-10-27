@@ -300,7 +300,8 @@
 #define CONFIG_SYS_NO_FLASH
 
 /* Monitor at beginning of flash */
-#define CONFIG_FSL_ENV_IN_MMC
+//#define CONFIG_FSL_ENV_IN_MMC
+#define CONFIG_FSL_ENV_IN_SF //iMX6 Rex saves the env into SPI FLASH
 /* #define CONFIG_FSL_ENV_IN_NAND */
 /* #define CONFIG_FSL_ENV_IN_SATA */
 
@@ -319,7 +320,7 @@
 	#define CONFIG_ENV_OFFSET       (768 * 1024)
 #elif defined(CONFIG_FSL_ENV_IN_SF)
 	#define CONFIG_ENV_IS_IN_SPI_FLASH	1
-	#define CONFIG_ENV_SPI_CS		1
+	#define CONFIG_ENV_SPI_CS		2
 	#define CONFIG_ENV_OFFSET       (768 * 1024)
 #else
 	#define CONFIG_ENV_IS_NOWHERE	1
