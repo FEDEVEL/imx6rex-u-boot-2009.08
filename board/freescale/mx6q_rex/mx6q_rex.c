@@ -580,7 +580,7 @@ static void mx6q_i2c_gpio_sda_direction(int bus, int output)
 			reg |= I2C3_SDA_GPIO3_18_BIT_MASK;
 		else
 			reg &= ~I2C3_SDA_GPIO3_18_BIT_MASK;
-		writel(reg, GPIO1_BASE_ADDR + GPIO_GDIR);
+		writel(reg, GPIO3_BASE_ADDR + GPIO_GDIR);
 	default:
 		break;
 	}
