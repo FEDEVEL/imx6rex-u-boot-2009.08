@@ -2007,7 +2007,8 @@ int checkboard(void)
 
 void udc_pins_setting(void)
 {
-	mxc_iomux_v3_setup_pad(MX6X_IOMUX(PAD_ENET_RX_ER__ANATOP_USBOTG_ID));
+	//!MM mxc_iomux_v3_setup_pad(MX6X_IOMUX(PAD_ENET_RX_ER__ANATOP_USBOTG_ID));
+	mxc_iomux_v3_setup_pad(MX6Q_PAD_GPIO_1__USBOTG_ID);	// USB0 ID
 	mxc_iomux_v3_setup_pad(MX6X_IOMUX(PAD_EIM_D22__GPIO_3_22));
 	mxc_iomux_v3_setup_pad(MX6X_IOMUX(PAD_ENET_TXD1__GPIO_1_29));
 
